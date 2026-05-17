@@ -48,7 +48,24 @@ ${currText.substring(0, 5000)}
       "lt_loan_officer": 0, "lt_loan_external": 0, "bonds": 0, "other_lt_liab": 0,
       "capital": 0, "capital_surplus": 0, "retained_earnings": 0, "treasury_stock": 0
     },
-    "curr": {}
+    "curr": {
+      "cash": 0, "deposit": 0,
+      "notes_receivable": 0, "accounts_receivable": 0,
+      "securities": 0,
+      "inventory_wip": 0, "raw_materials": 0,
+      "prepaid": 0, "st_loan_receivable": 0, "prepaid_expense": 0, "other_current": 0,
+      "building": 0, "machinery": 0, "land": 0, "other_tangible": 0,
+      "software": 0, "other_intangible": 0,
+      "investment_securities": 0, "equity_investment": 0, "security_deposits": 0,
+      "lt_prepaid": 0, "insurance_reserve": 0, "other_investments": 0,
+      "deferred_assets": 0,
+      "accounts_payable": 0, "accrued_payables": 0,
+      "advance_received": 0, "deposits_received": 0,
+      "accrued_salary": 0, "accrued_expense": 0, "accrued_tax": 0,
+      "st_loan_officer": 0, "st_loan_external": 0, "other_current_liab": 0,
+      "lt_loan_officer": 0, "lt_loan_external": 0, "bonds": 0, "other_lt_liab": 0,
+      "capital": 0, "capital_surplus": 0, "retained_earnings": 0, "treasury_stock": 0
+    }
   },
   "pl": {
     "prev": {
@@ -59,13 +76,22 @@ ${currText.substring(0, 5000)}
       "special_net": 0,
       "income_tax": 0
     },
-    "curr": {}
+    "curr": {
+      "sales": 0,
+      "beg_inventory": 0, "purchases_subcontract": 0, "end_inventory": 0,
+      "interest_income": 0, "misc_income": 0, "other_non_op_income": 0,
+      "interest_expense": 0, "other_non_op_expense": 0,
+      "special_net": 0,
+      "income_tax": 0
+    }
   },
   "mfg": {
     "prev": {
       "material": 0, "labor": 0, "expense": 0, "subcontract": 0, "depreciation": 0
     },
-    "curr": {}
+    "curr": {
+      "material": 0, "labor": 0, "expense": 0, "subcontract": 0, "depreciation": 0
+    }
   },
   "sga": {
     "prev": {
@@ -79,11 +105,22 @@ ${currText.substring(0, 5000)}
       "land_rent": 0, "depreciation": 0, "membership": 0, "consultant": 0,
       "bad_debt": 0, "insurance": 0, "donation": 0, "mgmt_fee": 0, "misc": 0
     },
-    "curr": {}
+    "curr": {
+      "officer_salary": 0, "employee_salary": 0, "bonus_retirement": 0,
+      "welfare": 0, "welfare_misc": 0, "commute": 0, "recruitment": 0,
+      "subcontract_sga": 0, "vehicle": 0, "retirement_fund": 0,
+      "freight": 0, "advertising": 0, "entertainment": 0, "meeting": 0,
+      "travel": 0, "vehicle_exp": 0, "promotion": 0,
+      "communication": 0, "consumables": 0, "repairs": 0, "utilities": 0,
+      "newspaper": 0, "rent": 0, "office_supplies": 0, "tax_dues": 0,
+      "land_rent": 0, "depreciation": 0, "membership": 0, "consultant": 0,
+      "bad_debt": 0, "insurance": 0, "donation": 0, "mgmt_fee": 0, "misc": 0
+    }
   }
 }
 
 注意：
+- 前期・当期それぞれのデータを必ずすべて埋めてください（片方だけにしない）
 - 「現金・預金」が一括表示の場合、cashを0にしてdepositに合計を入れてください
 - 「当期製品製造原価」はpl.mfg_costではなく、内訳をmfgに入れてください
 - special_netは特別利益から特別損失を引いた純額を入れてください
@@ -97,7 +134,7 @@ ${currText.substring(0, 5000)}
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-6",
+        model: "claude-sonnet-4-20250514",
         max_tokens: 2000,
         system,
         messages: [{ role: "user", content: userMsg }],
