@@ -9,4 +9,4 @@
 
 [functions]
   node_bundler = "esbuild"
-  included_files = ["template.xlsx"]
+  included_files = ["netlify/functions/template.xlsx"]
