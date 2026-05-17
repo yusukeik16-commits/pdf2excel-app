@@ -7,22 +7,21 @@ import { fileURLToPath } from "url";
 function loadTemplate() {
   const candidates = [];
 
-  // 方法1: import.meta.url が使える場合（ローカル開発環境など）
-  if (typeof import.meta.url === "string") {
-    const base = dirname(fileURLToPath(import.meta.url));
-    candidates.push(join(base, "../../template.xlsx"));
-  }
-
-  // 方法2: LAMBDA_TASK_ROOT（Netlify/AWS Lambda 本番環境）
-  // esbuild が included_files をバンドルルート直下に置く
+  // 方法1: LAMBDA_TASK_ROOT（Netlify/AWS Lambda 本番環境）
+  // included_files = ["template.xlsx"] により、バンドルルート直下に配置される
   if (process.env.LAMBDA_TASK_ROOT) {
     candidates.push(join(process.env.LAMBDA_TASK_ROOT, "template.xlsx"));
-    candidates.push(join(process.env.LAMBDA_TASK_ROOT, "../../template.xlsx"));
+  }
+
+  // 方法2: import.meta.url が使える場合（ローカル開発環境など）
+  if (typeof import.meta.url === "string") {
+    const base = dirname(fileURLToPath(import.meta.url));
+    candidates.push(join(base, "template.xlsx"));
+    candidates.push(join(base, "../../template.xlsx"));
   }
 
   // 方法3: process.cwd() からのフォールバック
   candidates.push(join(process.cwd(), "template.xlsx"));
-  candidates.push(join(process.cwd(), "netlify/functions/../../template.xlsx"));
 
   for (const p of candidates) {
     try {
