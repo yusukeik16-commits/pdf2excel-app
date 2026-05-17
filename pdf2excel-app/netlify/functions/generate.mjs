@@ -3,18 +3,39 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
 // Netlify Functions では import.meta.url が undefined になる場合があるため、
-// 複数の方法でベースディレクトリを解決する
-function getBaseDir() {
+// 複数の候補パスを試してテンプレートを読み込む
+function loadTemplate() {
+  const candidates = [];
+
   // 方法1: import.meta.url が使える場合（ローカル開発環境など）
   if (typeof import.meta.url === "string") {
-    return dirname(fileURLToPath(import.meta.url));
+    const base = dirname(fileURLToPath(import.meta.url));
+    candidates.push(join(base, "../../template.xlsx"));
   }
-  // 方法2: Netlify Lambda の実行ルートディレクトリ
+
+  // 方法2: LAMBDA_TASK_ROOT（Netlify/AWS Lambda 本番環境）
+  // esbuild が included_files をバンドルルート直下に置く
   if (process.env.LAMBDA_TASK_ROOT) {
-    return join(process.env.LAMBDA_TASK_ROOT, "netlify", "functions");
+    candidates.push(join(process.env.LAMBDA_TASK_ROOT, "template.xlsx"));
+    candidates.push(join(process.env.LAMBDA_TASK_ROOT, "../../template.xlsx"));
   }
-  // 方法3: process.cwd() からの相対パス（フォールバック）
-  return join(process.cwd(), "netlify", "functions");
+
+  // 方法3: process.cwd() からのフォールバック
+  candidates.push(join(process.cwd(), "template.xlsx"));
+  candidates.push(join(process.cwd(), "netlify/functions/../../template.xlsx"));
+
+  for (const p of candidates) {
+    try {
+      const buf = readFileSync(p);
+      console.log("template loaded from:", p);
+      return buf;
+    } catch (_) {
+      // 次の候補へ
+    }
+  }
+  throw new Error(
+    `template.xlsx が見つかりません。試したパス: ${candidates.join(", ")}`
+  );
 }
 
 // ── 赤色セル（入力可能）の完全マッピング ──────────────────────
@@ -141,9 +162,7 @@ export const handler = async (event) => {
     const { data } = JSON.parse(event.body);
 
     // テンプレート読み込み
-    const __dirname = getBaseDir();
-    const tplPath = join(__dirname, "../../template.xlsx");
-    const tplBuf = readFileSync(tplPath);
+    const tplBuf = loadTemplate();
 
     // ExcelJSで開く
     const ExcelJS = await import("exceljs");
