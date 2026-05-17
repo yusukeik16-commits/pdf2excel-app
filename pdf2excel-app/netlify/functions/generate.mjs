@@ -7,20 +7,19 @@ import { fileURLToPath } from "url";
 function loadTemplate() {
   const candidates = [];
 
-  // 方法1: LAMBDA_TASK_ROOT（Netlify/AWS Lambda 本番環境）
-  // included_files = ["template.xlsx"] により、バンドルルート直下に配置される
+  // 方法1: Netlify本番環境 - LAMBDA_TASK_ROOT直下
   if (process.env.LAMBDA_TASK_ROOT) {
     candidates.push(join(process.env.LAMBDA_TASK_ROOT, "template.xlsx"));
   }
 
-  // 方法2: import.meta.url が使える場合（ローカル開発環境など）
+  // 方法2: __dirname相当（esbuildバンドル後のファイルと同じディレクトリ）
   if (typeof import.meta.url === "string") {
     const base = dirname(fileURLToPath(import.meta.url));
     candidates.push(join(base, "template.xlsx"));
-    candidates.push(join(base, "../../template.xlsx"));
   }
 
-  // 方法3: process.cwd() からのフォールバック
+  // 方法3: process.cwd() フォールバック（ローカル開発用）
+  candidates.push(join(process.cwd(), "netlify/functions/template.xlsx"));
   candidates.push(join(process.cwd(), "template.xlsx"));
 
   for (const p of candidates) {
